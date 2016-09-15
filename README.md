@@ -20,3 +20,11 @@ Here's the issues page and the comments for one of the issues:
 
 <img src="screenshot.png" width="300" />
 <img src="screenshot2.png" width="300" />
+
+### Contributing
+
+Help us make the app better! Some ideas:
+
+1. Add real login, ideally with OAuth
+2. Add markdown rendering for comments
+3. Add a mutation to add reactions to comments, or post a new comment
