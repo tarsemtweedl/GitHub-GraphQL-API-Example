@@ -1,29 +1,31 @@
 # IssueReader
 
-A small app to demonstrate how to load and paginate some issues from a repo, and their comments, using GitHub's GraphQL API, with Apollo Client.
+On September 14, 2016, GitHub announced a preview of their new GraphQL API. [Read our recap of the news here!](https://medium.com/apollo-stack/the-new-github-graphql-api-811b005d1b6e#.jicbo4wzl).
+
+This is a small app to demonstrate how to load and paginate some issues and comments from a repository, using [Apollo Client with React Native](http://dev.apollodata.com/react/).
 
 ### Running
 
-1. Copy `config.default.js` into `config.js` and add your username and password (please send a PR to add better login!)
-2. `npm install`
-3. `react-native run-ios`
+1. Copy `config.default.js` into a file called `config.js`, and replace `xxx` with your username and password
+2. Install dependencies with `npm install`
+3. Make sure you have [React Native installed](https://facebook.github.io/react-native/docs/getting-started.html), then type `react-native run-ios` and wait for the iOS simulator to open
 
-### Features
+### Current features
 
-1. Sending login token to GitHub API
-2. Navigating between two views and loading different queries
-3. Infinite scroll pagination
+1. Sending a login token to GitHub API by attaching an `Authorization` header to the request
+2. Navigating between two views and loading different queries, with caching built into Apollo Client
+3. Infinite scroll pagination using the GraphQL connections
 
 ### Screenshot
 
-Here's the issues page and the comments for one of the issues:
+The UI is pretty basic, with only the default styling. The first page is the list of issues for the Apollo Client repository, and if you tap you can see the comments for that issue on the second page. As you scroll down, the app eventually loads all of the issues and comments.
 
 <img src="screenshot.png" width="300" />
 <img src="screenshot2.png" width="300" />
 
 ### Contributing
 
-Help us make the app better! Some ideas:
+Help make the app better! Some ideas:
 
 1. Add real login, ideally with OAuth
 2. Add markdown rendering for comments
