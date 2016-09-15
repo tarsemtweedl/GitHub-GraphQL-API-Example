@@ -19,3 +19,4 @@ A small app to demonstrate how to load and paginate some issues from a repo, and
 Here's the home page:
 
 <img src="screenshot.png" width="300" />
+<img src="screenshot.png" width="300" />
