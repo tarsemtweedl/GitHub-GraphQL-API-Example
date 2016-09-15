@@ -16,7 +16,7 @@ A small app to demonstrate how to load and paginate some issues from a repo, and
 
 ### Screenshot
 
-Here's the home page:
+Here's the issues page and the comments for one of the issues:
 
 <img src="screenshot.png" width="300" />
-<img src="screenshot.png" width="300" />
+<img src="screenshot2.png" width="300" />
