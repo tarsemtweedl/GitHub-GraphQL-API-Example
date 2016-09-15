@@ -1,6 +1,6 @@
 # IssueReader
 
-A small app to demonstrate how to load and paginate some issues using GitHub's GraphQL API, with Apollo Client.
+A small app to demonstrate how to load and paginate some issues from a repo, and their comments, using GitHub's GraphQL API, with Apollo Client.
 
 ### Running
 
@@ -12,10 +12,10 @@ A small app to demonstrate how to load and paginate some issues using GitHub's G
 
 1. Sending login token to GitHub API
 2. Navigating between two views and loading different queries
-3. Infinite scroll pagination 
+3. Infinite scroll pagination
 
 ### Screenshot
 
 Here's the home page:
 
-![Screenshot](screenshot.png)
+<img src="screenshot.png" width="300" />
