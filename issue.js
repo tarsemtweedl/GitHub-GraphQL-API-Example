@@ -31,6 +31,14 @@ const IssueCommentsQuery = gql`
                 id
                 login
               }
+              reactionGroups {
+                id
+                viewerHasReacted
+                content
+                reactions {
+                  totalCount
+              	}
+              }
             }
             cursor
           }
@@ -86,6 +94,15 @@ const withIssueComments = graphql(IssueCommentsQuery, {
   }
 });
 
+const REACTION_EMOJI_MAP = {
+  THUMBS_UP: '👍',
+  THUMBS_DOWN: '👎',
+  LAUGH: '😄',
+  HOORAY: '🎉',
+  CONFUSED: '😕',
+  HEART: '❤',
+};
+
 class Issue extends React.Component {
   constructor(props) {
     super();
@@ -106,8 +123,7 @@ class Issue extends React.Component {
   }
 
   render() {
-    const { comments, hasNextPage, loading, fetchNextPage } = this.props;
-
+    const { id, comments, hasNextPage, loading, fetchNextPage } = this.props;
     return (
       <View style={{flex: 1}}>
         <ListView
@@ -121,6 +137,18 @@ class Issue extends React.Component {
                 </Text>
                 <Text style={styles.commentBody}>
                   {comment.body}
+                </Text>
+                <Text style={styles.reactions}>
+                  {comment.reactionGroups.map(reaction => (
+                    <Text key={reaction.id} style={[
+                      styles.reaction,
+                      reaction.viewerHasReacted ? styles.selectedReaction : null,
+                      reaction.reactions.totalCount > 0 ? styles.activeReaction : null,
+                    ]}>
+                      {REACTION_EMOJI_MAP[reaction.content]}
+                      {reaction.reactions.totalCount}
+                    </Text>
+                  ))}
                 </Text>
               </View>
             )
@@ -149,5 +177,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     padding: 10,
     paddingBottom: 30,
-  }
+  },
+  reactions: {
+    margin: 5,
+    flexDirection: 'row',
+  },
+  reaction: {
+    opacity: 0.5,
+    fontSize: 20,
+  },
+  selectedReaction: {
+    fontSize: 25,
+    fontWeight: 'bold',
+  },
+  activeReaction: {
+    opacity: 1,
+  },
 });
