@@ -94,6 +94,136 @@ const withIssueComments = graphql(IssueCommentsQuery, {
   }
 });
 
+const AddReactionMutation = gql`
+  mutation AddReaction($clientMutationId: String!, $subjectId: ID!, $content: ReactionContent!) {
+    addReaction(input: {
+      clientMutationId: $clientMutationId,
+      subjectId: $subjectId,
+      content: $content
+    }) {
+      reaction {
+        content
+      }
+    }
+  }
+`;
+
+const withAddReaction = graphql(AddReactionMutation, {
+  props: ({mutate}) => ({
+    addReaction: (commentId, reaction) => mutate({
+      mutation: AddReactionMutation,
+      variables: {
+        clientMutationId: new Date().toString(),
+        subjectId: commentId,
+        content: reaction,
+      },
+      updateQueries: {
+        GetRepositoryIssues: (previousResult, {mutationResult: {data}}) => ({
+          ...previousResult,
+          ...(data && previousResult.node ? {
+            node: {
+              ...previousResult.node,
+              comments: {
+                ...previousResult.node.comments,
+                edges: previousResult.node.comments.edges.map(edge => (
+                  edge.node.id === commentId ? {
+                    ...edge,
+                    node: {
+                      ...edge.node,
+                      reactionGroups: edge.node.reactionGroups.map(reactionGroup => (
+                        data.addReaction.reaction.content === reactionGroup.content ? {
+                          ...reactionGroup,
+                          viewerHasReacted: true,
+                          reactions: {
+                            ...reactionGroup.reactions,
+                            totalCount: reactionGroup.reactions.totalCount + 1,
+                          }
+                        } : reactionGroup
+                      )),
+                    },
+                  } : edge
+                )),
+              },
+            },
+          } : {}),
+        }),
+      },
+      optimisticResponse: {
+        addReaction: {
+          reaction: {
+            content: reaction,
+          },
+        },
+      },
+    }),
+  }),
+});
+
+const RemoveReactionMutation = gql`
+  mutation RemoveReaction($clientMutationId: String!, $subjectId: ID!, $content: ReactionContent!) {
+    removeReaction(input: {
+      clientMutationId: $clientMutationId,
+      subjectId: $subjectId,
+      content: $content
+    }) {
+      reaction {
+        content
+      }
+    }
+  }
+`;
+
+const withRemoveReaction = graphql(RemoveReactionMutation, {
+  props: ({mutate}) => ({
+    removeReaction: (commentId, reaction) => mutate({
+      mutation: RemoveReactionMutation,
+      variables: {
+        clientMutationId: new Date().toString(),
+        subjectId: commentId,
+        content: reaction,
+      },
+      updateQueries: {
+        GetRepositoryIssues: (previousResult, {mutationResult: {data}}) => ({
+          ...previousResult,
+          ...(data && previousResult.node ? {
+            node: {
+              ...previousResult.node,
+              comments: {
+                ...previousResult.node.comments,
+                edges: previousResult.node.comments.edges.map(edge => (
+                  edge.node.id === commentId ? {
+                    ...edge,
+                    node: {
+                      ...edge.node,
+                      reactionGroups: edge.node.reactionGroups.map(reactionGroup => (
+                        data.removeReaction.reaction.content === reactionGroup.content ? {
+                          ...reactionGroup,
+                          viewerHasReacted: false,
+                          reactions: {
+                            ...reactionGroup.reactions,
+                            totalCount: Math.max(reactionGroup.reactions.totalCount - 1, 0),
+                          }
+                        } : reactionGroup
+                      )),
+                    },
+                  } : edge
+                )),
+              },
+            },
+          } : {}),
+        }),
+      },
+      optimisticResponse: {
+        removeReaction: {
+          reaction: {
+            content: reaction,
+          },
+        },
+      },
+    }),
+  }),
+});
+
 const REACTION_EMOJI_MAP = {
   THUMBS_UP: '👍',
   THUMBS_DOWN: '👎',
@@ -123,7 +253,10 @@ class Issue extends React.Component {
   }
 
   render() {
-    const { id, comments, hasNextPage, loading, fetchNextPage } = this.props;
+    const {
+      id, comments, hasNextPage, loading, fetchNextPage,
+      addReaction, removeReaction,
+    } = this.props;
     return (
       <View style={{flex: 1}}>
         <ListView
@@ -140,11 +273,17 @@ class Issue extends React.Component {
                 </Text>
                 <Text style={styles.reactions}>
                   {comment.reactionGroups.map(reaction => (
-                    <Text key={reaction.id} style={[
-                      styles.reaction,
-                      reaction.viewerHasReacted ? styles.selectedReaction : null,
-                      reaction.reactions.totalCount > 0 ? styles.activeReaction : null,
-                    ]}>
+                    <Text
+                      key={reaction.id}
+                      style={[
+                        styles.reaction,
+                        reaction.viewerHasReacted ? styles.selectedReaction : null,
+                        reaction.reactions.totalCount > 0 ? styles.activeReaction : null,
+                      ]}
+                      onPress={() => reaction.viewerHasReacted ?
+                        removeReaction(comment.id, reaction.content) :
+                        addReaction(comment.id, reaction.content)}
+                    >
                       {REACTION_EMOJI_MAP[reaction.content]}
                       {reaction.reactions.totalCount}
                     </Text>
@@ -162,7 +301,7 @@ class Issue extends React.Component {
   }
 }
 
-export default withIssueComments(Issue);
+export default withRemoveReaction(withAddReaction(withIssueComments(Issue)));
 
 const styles = StyleSheet.create({
   container: {
