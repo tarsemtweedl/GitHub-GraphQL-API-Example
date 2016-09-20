@@ -4,6 +4,8 @@ On September 14, 2016, GitHub announced a preview of their new GraphQL API. [Rea
 
 This is a small app to demonstrate how to load and paginate some issues and comments from a repository, using [Apollo Client with React Native](http://dev.apollodata.com/react/).
 
+Before getting started make sure you have registered to get access to the [GitHub pre-release program](https://github.com/prerelease/agreement).  
+
 ### Running
 
 1. Copy `config.default.js` into a file called `config.js`, and replace `xxx` with your username and password
