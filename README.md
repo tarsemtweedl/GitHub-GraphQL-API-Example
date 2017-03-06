@@ -1,5 +1,7 @@
 # IssueReader
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/apollographql/GitHub-GraphQL-API-Example.svg)](https://greenkeeper.io/)
+
 On September 14, 2016, GitHub announced a preview of their new GraphQL API. [Read our recap of the news here!](https://medium.com/apollo-stack/the-new-github-graphql-api-811b005d1b6e#.jicbo4wzl).
 
 This is a small app to demonstrate how to load and paginate some issues and comments from a repository, using [Apollo Client with React Native](http://dev.apollodata.com/react/).
