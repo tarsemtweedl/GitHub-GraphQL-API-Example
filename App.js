@@ -7,6 +7,7 @@ import {
   ScrollView,
   Platform,
   NavigatorIOS,
+  ToastAndroid,
   TouchableHighlight,
 } from 'react-native';
 
@@ -22,6 +23,7 @@ import Repository from './repository';
 import Issue from './issue';
 
 import { username, password } from './config';
+import {StackNavigator} from "react-navigation";
 
 let TOKEN = null;
 
@@ -44,10 +46,16 @@ const client = new ApolloClient({
 });
 
 class IssueReader extends Component {
-  constructor() {
-    super();
-    this.state = { login: false };
-  }
+  state = {
+    login: false,
+  };
+
+  static user = 'gengjiawen';
+  static name = 'desktop';
+  static navigationOptions = {
+    title: `apollostack/apollo-client`,
+  };
+
   componentDidMount() {
     if (username === 'xxx') {
       throw new Error('Please create a config.js your username and password.');
@@ -56,15 +64,6 @@ class IssueReader extends Component {
       TOKEN = token;
       this.setState({ login: true });
     });
-  }
-  routeForIssue(id, title) {
-    return {
-      title,
-      component: Issue,
-      passProps: {
-        id,
-      },
-    };
   }
   routeForRepository(login, name) {
     return {
@@ -82,22 +81,13 @@ class IssueReader extends Component {
   render() {
     const login = 'apollostack';
     const name = 'apollo-client';
-    const header = Platform.OS === 'ios' ?
-      <NavigatorIOS
-        ref="nav"
-        style={styles.container}
-        initialRoute={this.routeForRepository(login, name)}
-        tintColor="#008888"
-      /> :
-      <View style={styles.container}>
-        <Text>{login}/{name}</Text>
-        <Repository login={login} name={name} />
-      </View>
-    ;
-
     return this.state.login ? (
       <ApolloProvider client={client}>
-        {header}
+        <View style={styles.container}>
+          <Repository login={login} name={name} goToIssue={(id, title) => {
+            return this.props.navigation.navigate("Issue", {id: id, title})
+          }}/>
+        </View>
       </ApolloProvider>
     ) : <Text>Logging in</Text>;
   }
@@ -119,4 +109,26 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('IssueReader', () => IssueReader);
+const SimpleApp = StackNavigator({
+  Home: { screen: IssueReader},
+  Issue: { screen: ApolloWrapper(Issue),
+    navigationOptions: ({ navigation }) => {
+      title: `${navigation.state.params.title}`;
+},
+  },
+});
+
+function ApolloWrapper(CMP) {
+  return class extends Component {
+    render() {
+      return (
+        <ApolloProvider client={client}>
+          <CMP {...this.props}/>
+        </ApolloProvider>
+      );
+    }
+  };
+}
+
+
+AppRegistry.registerComponent('IssueReader', () => SimpleApp);
