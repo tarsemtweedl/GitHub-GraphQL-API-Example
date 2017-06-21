@@ -7,7 +7,7 @@ import {
   Text,
   View,
   ScrollView,
-  NavigatorIOS,
+  ToastAndroid,
   TouchableHighlight,
   WebView,
   ListView,

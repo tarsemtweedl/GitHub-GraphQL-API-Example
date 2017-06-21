@@ -9,6 +9,7 @@ import {
   View,
   ScrollView,
   NavigatorIOS,
+  ToastAndroid,
   TouchableHighlight,
   WebView,
   ListView,
@@ -28,7 +29,6 @@ const IssueCommentsQuery = gql`
               id
               body
               author {
-                id
                 login
               }
             }
@@ -44,12 +44,15 @@ const IssueCommentsQuery = gql`
 `;
 
 const withIssueComments = graphql(IssueCommentsQuery, {
-  options: ({ id }) => ({
-    variables: {
-      id,
-      after: null,
-    }
-  }),
+  options: ({id, navigation}) => {
+    // ToastAndroid.show(JSON.stringify(navigation), ToastAndroid.LONG);
+    return ({
+      variables: {
+        id: navigation.state.params.id,
+        after: null,
+      }
+    });
+  },
   props: ({ data, ownProps }) => {
     if (data.loading) {
       return { loading: true, fetchNextPage: () => {} };
@@ -58,6 +61,8 @@ const withIssueComments = graphql(IssueCommentsQuery, {
     if (data.error) {
       console.log(data.error);
     }
+
+    // ToastAndroid.show(JSON.stringify(data), ToastAndroid.LONG);
 
     const fetchNextPage = () => {
       return data.fetchMore({
