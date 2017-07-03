@@ -130,4 +130,5 @@ function ApolloWrapper(CMP) {
   };
 }
 
-export default SimpleApp
+
+AppRegistry.registerComponent('IssueReader', () => SimpleApp);

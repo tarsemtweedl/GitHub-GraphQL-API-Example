@@ -10,7 +10,7 @@ Before getting started make sure you have registered to get access to the [GitHu
 
 1. Copy `config.default.js` into a file called `config.js`, and replace `xxx` with your username and password
 2. Install dependencies with `npm install`
-3. Run 'npm run start' in terminal. For more, please check https://github.com/react-community/create-react-native-app.
+3. Make sure you have [React Native installed](https://facebook.github.io/react-native/docs/getting-started.html), then type `react-native run-ios` and wait for the iOS simulator to open
 
 ### Current features
 
